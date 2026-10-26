@@ -1,0 +1,20 @@
+# Docker Compose levanta la base de datos PostgreSQL sin instalarla en tu máquina.
+# Las variables ${...} se leen automáticamente del archivo .env (copia de .env.example).
+services:
+  db:
+    image: postgres:16
+    container_name: reservas_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      # Puerto de tu máquina : puerto dentro del contenedor
+      - '${DB_PORT}:5432'
+    volumes:
+      # Guarda los datos para que no se pierdan al reiniciar el contenedor
+      - reservas_data:/var/lib/postgresql/data
+
+volumes:
+  reservas_data:
