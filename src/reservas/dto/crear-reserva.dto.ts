@@ -34,23 +34,25 @@ export class CrearReservaDto {
   })
   tipoHabitacion: TipoHabitacion;
 
-  // Fecha en formato ISO 8601, por ejemplo 2027-02-13.
-  // "strict" rechaza fechas imposibles como 2027-02-30.
+  // Fecha en formato ISO 8601 de solo día (AAAA-MM-DD), por ejemplo 2027-02-13.
+  // Usamos dos validaciones juntas:
+  // - @Matches exige exactamente ese formato (así podemos comparar fechas como texto).
+  // - @IsDateString con "strict" rechaza fechas imposibles como 2027-02-30.
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'fechaIngreso debe tener el formato AAAA-MM-DD (ej: 2027-02-13)',
+  })
   @IsDateString(
     { strict: true },
-    {
-      message:
-        'fechaIngreso debe ser una fecha válida en formato ISO 8601 (ej: 2027-02-13)',
-    },
+    { message: 'fechaIngreso debe ser una fecha válida (ej: 2027-02-13)' },
   )
   fechaIngreso: string;
 
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'fechaSalida debe tener el formato AAAA-MM-DD (ej: 2027-02-15)',
+  })
   @IsDateString(
     { strict: true },
-    {
-      message:
-        'fechaSalida debe ser una fecha válida en formato ISO 8601 (ej: 2027-02-15)',
-    },
+    { message: 'fechaSalida debe ser una fecha válida (ej: 2027-02-15)' },
   )
   fechaSalida: string;
 
