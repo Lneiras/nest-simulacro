@@ -16,6 +16,11 @@ import { FiltrarReservasDto } from './dto/filtrar-reservas.dto';
 import { Reserva } from './entities/reserva.entity';
 import { EstadoReserva } from './enums/estado-reserva.enum';
 
+// El id de la reserva es un entero de PostgreSQL (tipo integer), que llega hasta este valor.
+// Si alguien consulta un id mayor, PostgreSQL lanzaría un error interno (500),
+// así que lo revisamos antes de consultar la base de datos.
+const ID_MAXIMO = 2147483647;
+
 // El servicio contiene la lógica de negocio. El controlador solo recibe la petición
 // y se la pasa al servicio, así cada clase tiene una única responsabilidad.
 @Injectable()
@@ -94,7 +99,10 @@ export class ReservasService {
 
   // Consulta de una reserva individual. Aplica las mismas reglas de acceso que el listado.
   async obtenerPorId(id: number, usuario: Usuario): Promise<Reserva> {
-    const reserva = await this.reservasRepository.findOneBy({ id });
+    // Un id mayor al máximo no puede existir en la base de datos: respondemos 404
+    // en lugar de dejar que la consulta falle con un error 500.
+    const reserva =
+      id > ID_MAXIMO ? null : await this.reservasRepository.findOneBy({ id });
 
     // 404: la reserva no existe.
     if (!reserva) {
